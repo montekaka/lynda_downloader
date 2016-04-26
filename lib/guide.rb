@@ -1,4 +1,5 @@
 require 'course'
+require 'user'
 class Guide
 
 	def launch!
@@ -23,7 +24,16 @@ class Guide
 			@username = gets.chomp.strip
 			print "Password: "
 			@password = gets.chomp.strip
-			download
+			logged_in_browser = login
+			if logged_in_browser
+				puts "Successful logged in \n\n"
+				puts "Please enter the Course URL you wish to download"
+				print "Course URL: "
+				course_url = gets.chomp.strip				
+				download(course_url,logged_in_browser)
+			else
+				puts "not successful"
+			end
 		when 'quit'
 			return :quit
 		else
@@ -35,12 +45,16 @@ class Guide
 		puts "This is an interactive guide to help you to download from lynda.\n\n"		
 	end	
 
-	def download
-		puts "Enter the course URL to start"
-		course_url = gets.chomp.strip
-		course = Course.new
-		course.username = @username
-		course.password = @password
+	def login
+		user = User.new
+		user.username = @username
+		user.password = @password
+		user.login
+		#user.save
+	end
+
+	def download(course_url,logged_in_browser)
+		course = Course.new(logged_in_browser)
 		course.course_url = course_url
 		if course.save
 			puts "\nCourse saved\n\n"

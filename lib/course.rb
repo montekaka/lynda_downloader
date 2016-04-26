@@ -3,47 +3,24 @@ require 'watir-webdriver'
 require 'nokogiri'
 require 'open-uri'
 class Course
+
+	def initialize(logged_in_browser)
+		@browser = logged_in_browser
+	end
+
 	@@course_parsed = false
-	@browser = nil
 
 	attr_accessor :course_url
-
-	def username=(username)
-		@username = username
-	end
-
-	def password=(password)
-		@password = password
-	end
 
 	def save
 		return false unless self.download_from_lynda		
 		return true
 	end
 
-	def login_to_lynda_with_company_account
-		@browser.text_field(:name, "usernameInput").set(@username)
-		@browser.text_field(:name, "passwordInput").set(@password)
-		@browser.button(:id,'lnk_login').click		
-	end
-
-	def login_to_lynda
-		@browser.text_field(:name, "usernameInput").set(@username)
-		@browser.text_field(:name, "passwordInput").set(@password)
-		@browser.button(:id,'lnk_login').click	
-		self.check_login_error	
-	end	
-
 	def download_from_lynda
-		@browser = Watir::Browser.new(:phantomjs)
-		@browser.goto 'https://www.lynda.com/login/login.aspx'
-		if self.check_login_error			
-			self.parse_the_page
-			return true
-		else
-			return false			
-		end
-		@browser.close		
+		@browser.goto @login_url
+		self.parse_the_page
+		@browser.close
 	end
 
 	def parse_the_page
@@ -62,7 +39,7 @@ class Course
 				chapter_title.strip!
 				video_chapter["chapter_title"] = chapter_title
 				video_chapter["items"] = []
-				video_chapters.push(video_chapter)
+				video_chapters << video_chapter
 				chapter_count = chapter_count + 1
 			end
 			item_number = 1
@@ -98,17 +75,7 @@ class Course
 					end
 				end
 			end
-		end		
-	end
-	def check_login_error
-		login_error = false
-		html_source = @browser.html
-		doc = Nokogiri::HTML(html_source)
-		if doc.css('div#login-error>h3')
-			p doc.css('div#login-error>h3').text
-		else
-			login_error = true
-		end
-		return login_error
+		end	
+		return video_chapters	
 	end
 end
