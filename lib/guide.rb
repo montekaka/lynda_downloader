@@ -24,6 +24,8 @@ class Guide
 			@username = gets.chomp.strip
 			print "Password: "
 			@password = gets.chomp.strip
+			print "Are you Organization Login (y/N)?: "
+			@organization = gets.chomp.strip
 			logged_in_browser = login
 			if logged_in_browser
 				puts "Successful logged in \n\n"
@@ -49,6 +51,7 @@ class Guide
 		user = User.new
 		user.username = @username
 		user.password = @password
+		user.organization = @organization
 		user.login
 		#user.save
 	end
