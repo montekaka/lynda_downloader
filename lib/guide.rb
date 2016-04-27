@@ -78,7 +78,7 @@ class Guide
 	end
 
 	def output_file args
-		prints "Save file as: "
+		print "Save file as: "
 		file_name = gets.chomp.strip
 		file = Lyndafile.new
 		file.args = args
