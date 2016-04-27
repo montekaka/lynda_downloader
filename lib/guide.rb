@@ -1,5 +1,6 @@
 require 'course'
 require 'user'
+require 'Lyndafile'
 class Guide
 
 	def launch!
@@ -32,7 +33,15 @@ class Guide
 				puts "Please enter the Course URL you wish to download"
 				print "Course URL: "
 				course_url = gets.chomp.strip				
-				download(course_url,logged_in_browser)
+				course = download(course_url,logged_in_browser)
+
+				if course == false
+					puts 'Fails to download the course'
+				else
+					p course.count
+					output_file(course)		
+					p "Output finish"			
+				end
 			else
 				puts "not successful"
 			end
@@ -59,13 +68,24 @@ class Guide
 	def download(course_url,logged_in_browser)
 		course = Course.new(logged_in_browser)
 		course.course_url = course_url
-		if course.save
+		course_download = course.download
+		if course_download
 			puts "\nCourse saved\n\n"
+			return course_download
 		else
 			puts "\nSave Error: Course not added"
 		end
 	end
 
+	def output_file args
+		prints "Save file as: "
+		file_name = gets.chomp.strip
+		file = Lyndafile.new
+		file.args = args
+		file.file_name = file_name
+		#file.file_name = "Andriod"
+		file.save
+	end
 	def conclusion
 		puts "\n<<< Goodbye! >>>\n\n\n"
 	end	

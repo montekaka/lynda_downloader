@@ -12,15 +12,21 @@ class Course
 
 	attr_accessor :course_url
 
-	def save
-		return false unless self.download_from_lynda		
-		return true
+	def download
+		result = self.download_from_lynda
+		if result
+			result = result
+		else
+			result = false
+		end		
+		return result
 	end
 
 	def download_from_lynda
 		@browser.goto @login_url
-		self.parse_the_page
+		result = self.parse_the_page
 		@browser.close
+		return result
 	end
 
 	def parse_the_page
@@ -58,6 +64,7 @@ class Course
 				item_number = item_number+ 1
 			end
 		end
+		#video_chapters = video_chapters[0..1]
 		video_chapters.each do |chapter|
 			chapter["items"].each do |item|
 				video_title = item["item_title"]
@@ -70,7 +77,7 @@ class Course
 						video_url = v['data-src']
 						if video_url
 							item["video_url"] = video_url
-							sleep(30)
+							sleep(10)
 						end
 					end
 				end
