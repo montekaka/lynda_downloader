@@ -5,7 +5,7 @@ require 'open-uri'
 
 class User
 	attr_accessor :organization
-	def initialize(login_url = 'https://www.lynda.com/login/login.aspx')
+	def initialize(login_url = 'https://www.lynda.com/signin')
 		@login_url = login_url
 	end
 	def username=(username)
@@ -23,9 +23,11 @@ class User
 	end
 
 	def login_to_lynda browser
-		browser.text_field(:id, "usernameInput").set(@username)
-		browser.text_field(:id, "passwordInput").set(@password)
-		browser.button(:id,'lnk_login').click
+		browser.text_field(:id, "email-address").set(@username)		
+		browser.button(:id,'username-submit').click
+		sleep(1)
+		browser.text_field(:id, "password-input").set(@password)
+		browser.button(:id,'password-submit').click
 		return browser
 	end	
 
